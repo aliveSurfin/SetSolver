@@ -8,21 +8,23 @@ public class Solver {
     // 3 colours
     // 3 shadings
     // 3 numbers
-    public Card[] createDeck(){
-        Card[] returnArray = new Card[81];
+    public ArrayList<Card> createDeck(){
+        ArrayList<Card> deck = new ArrayList<>();
         Integer id = 0;
-        for(int num=0; num<3; num++){
-            for(int sym=0; sym<3; sym++){
-                for(int col=0; col<3; col++){
-                    for(int shad=0; shad<3; shad++){
+        for(int num=1; num<=3; num++){
+            for(int sym=1; sym<=3; sym++){
+                for(int col=1; col<=3; col++){
+                    for(int shad=1; shad<=3; shad++){
                         Card newCard = new Card(id,num,sym,col,shad);
+                        //System.out.println(newCard.toString());
+                        deck.add(newCard);
                         id++;
                     }
                 }
             }
         }
-        System.out.println(returnArray.length);
-        return returnArray;
+        System.out.println(deck.size());
+        return deck;
     }
     private boolean isSet(ArrayList<Card> pSet){
 
@@ -132,6 +134,74 @@ public class Solver {
                 }
             }
         }
+//doubles
+
+        //num and sym
+        if(allDifferent(c1.shad,c2.shad,c3.shad)){
+            if(allDifferent(c1.col,c2.col,c3.col)){
+                if(allSame(c1.num,c2.num,c3.num)){
+                    if(allSame(c1.sym,c2.sym,c3.sym)){
+                        System.out.println("num and sym same");
+                        return true;
+                    }
+                }
+            }
+        }
+        //num and col
+        if(allDifferent(c1.shad,c2.shad,c3.shad)){
+            if(allSame(c1.col,c2.col,c3.col)){
+                if(allSame(c1.num,c2.num,c3.num)){
+                    if(allDifferent(c1.sym,c2.sym,c3.sym)){
+                        System.out.println("num and col same");
+                        return true;
+                    }
+                }
+            }
+        }
+        //num and shad
+        if(allSame(c1.shad,c2.shad,c3.shad)){
+            if(allDifferent(c1.col,c2.col,c3.col)){
+                if(allSame(c1.num,c2.num,c3.num)){
+                    if(allDifferent(c1.sym,c2.sym,c3.sym)){
+                        System.out.println("num and shad same");
+                        return true;
+                    }
+                }
+            }
+        }
+        //sym and col
+        if(allDifferent(c1.shad,c2.shad,c3.shad)){
+            if(allSame(c1.col,c2.col,c3.col)){
+                if(allDifferent(c1.num,c2.num,c3.num)){
+                    if(allSame(c1.sym,c2.sym,c3.sym)){
+                        System.out.println("sym and col same");
+                        return true;
+                    }
+                }
+            }
+        }
+        //sym and shad
+        if(allSame(c1.shad,c2.shad,c3.shad)){
+            if(allDifferent(c1.col,c2.col,c3.col)){
+                if(allDifferent(c1.num,c2.num,c3.num)){
+                    if(allSame(c1.sym,c2.sym,c3.sym)){
+                        System.out.println("sym and shade same");
+                        return true;
+                    }
+                }
+            }
+        }
+        //col and shad
+        if(allSame(c1.shad,c2.shad,c3.shad)){
+            if(allSame(c1.col,c2.col,c3.col)){
+                if(allDifferent(c1.num,c2.num,c3.num)){
+                    if(allDifferent(c1.sym,c2.sym,c3.sym)){
+                        System.out.println("col and shade same");
+                        return true;
+                    }
+                }
+            }
+        }
 
 
 return false;
@@ -152,39 +222,38 @@ return false;
         }
         return false;
     }
-    public Card[] getSets(Card[] pack){
-        ArrayList<ArrayList<Card>> pSets = new ArrayList<>();
-        ArrayList<Card> curSet = new ArrayList<>();
-        ArrayList<Card> actualSets = new ArrayList<>();
-       // actualSets = null;
-        for(int x=0; x<pack.length; x++){// for every card
-            curSet.add(pack[x]);
-            Collections.sort(curSet);
-            for (int y=0; y<pack.length; y++){
+    public ArrayList<Card> cloneSet(ArrayList<Card> set){
+        ArrayList<Card> newSet = new ArrayList<>();
+        newSet.add(set.get(0));
+        newSet.add(set.get(1));
+        newSet.add(set.get(2));
 
-                if(!curSet.contains(pack[y])){ // skip if already in set
-                    curSet.add(pack[y]);
-                    Collections.sort(curSet);
-                }
-                for (int z=0; z<pack.length; z++){
-                    if(!curSet.contains(pack[z])){ // skip if already in set
-                        curSet.add(pack[z]);
-                        if(!pSets.contains(curSet)) {
-                            isSet(curSet);
-                        }
-                        curSet.clear();
-                    }
-                }
-            }
-        }
-        return pack;
+        return newSet;
     }
-    public static void main(String[] args){
-        Solver s = new Solver();
-        ArrayList<Card> cards = new ArrayList<>();
-        cards.add(new Card(1,1,2,3,1));
-        cards.add(new Card(2,2,2,3,1));
-        cards.add(new Card(3,3,2,3,1));
-        System.out.println(s.isSet(cards));
+    public ArrayList<ArrayList<Card>> getSets(ArrayList<Card> solveSet){
+       ArrayList<ArrayList<Card>> potSets = new ArrayList<>();
+       ArrayList<Card> curSet = new ArrayList<>();
+       for (int x=0; x<solveSet.size();x++){
+           for (int y=x+1; y<solveSet.size();y++){
+               for(int z=y+1; z<solveSet.size(); z++){
+                   curSet.add(solveSet.get(x));
+                   curSet.add(solveSet.get(y));
+                   curSet.add(solveSet.get(z));
+                   //Collections.sort(curSet);
+                   if(curSet.size()==3) {
+                       if (isSet(curSet)) {
+                           potSets.add(cloneSet(curSet));
+                           System.out.println(curSet.size());
+
+                       }
+                   }
+                   curSet.clear();
+               }
+           }
+
+       }
+
+        System.out.println("TESTING " + potSets.get(0).size());
+       return potSets;
     }
 }

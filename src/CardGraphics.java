@@ -10,7 +10,7 @@ class CardGraphics extends JPanel {
     GeneralPath diamond;
     GeneralPath ellipse;
     Stroke stroke;
-    Card card;
+    public Card card;
     Dimension dimension;
     // Override paintComponent to perform your own painting
     private void createPaths(){
@@ -40,25 +40,39 @@ class CardGraphics extends JPanel {
         ellipse = new GeneralPath();
         ellipse.moveTo(centX-(width/6),centY-(height/10));
         ellipse.lineTo(centX+(width/6),centY-(height/10));
-        ellipse.append(new Arc2D.Double(),true);
+        ellipse.quadTo(centX+(width/4),centY,centX+(width/6),centY+(height/10));
+        ellipse.lineTo(centX-(width/6),centY+(height/10));
+        ellipse.quadTo(centX-(width/4),centY,centX-(width/6),centY-(height/10));
+
+
         //ellipse.quadTo(centX+(width/3),centY,centX+(width/6),centY+(height/10));
 
 
 
     }
     public CardGraphics(Card card,Dimension dimension){
+       // System.out.println(card.toString());
         this.card = card;
-        stroke = new BasicStroke(4.0f);
+        System.out.println(card.toString());
+        stroke = new BasicStroke(5.0f);
+
         setPreferredSize(dimension);
         this.dimension = dimension;
         createPaths();
     }
     @Override
     public void paintComponent(Graphics g) {
+        if (this.card==null
+                ){
+            System.out.println("NULL");
+        }
         super.paintComponent(g);     // paint parent's background
         Color color;
         Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setStroke(stroke);
+        //g2d.scale(.5,.5);
         //colour
+        //System.out.println("test: " + card.col);
         switch (card.col){
             case 1:color = Color.RED; // red
                 break;
@@ -67,7 +81,7 @@ class CardGraphics extends JPanel {
             default: color = Color.BLUE; // blue
             break;
         }
-        System.out.println(color.toString());
+       // System.out.println(color.toString());
         //shading
         boolean outline = false;
         switch (card.shad){
@@ -75,9 +89,11 @@ class CardGraphics extends JPanel {
                 break;
             case 2: GradientPaint grad = new GradientPaint(10,25,color,12,25,Color.WHITE,true);
                 g2d.setPaint(grad);
-                System.out.println("SHADED");
+              //  System.out.println("SHADED");
             break;
-            case 3: //g2d.setStroke(Stroke);
+            case 3:
+                g2d.setColor(color);
+                outline = true;
             break;
         }
         //Symbol
@@ -85,15 +101,55 @@ class CardGraphics extends JPanel {
         switch (card.sym){
             case 1: symbol = diamond;
             break;
+            case 2: symbol = ellipse;
+
+            break;
+            default: symbol = squiggle;
+            g2d.scale(0.8,0.8);
+            g2d.translate(dimension.width/10,0);
+            break;
+
         }
-        //NUMBER & SYMBOL
+        //NUMBER
         switch (card.num){
             case 1:
+                g2d.draw(symbol);
+                if(!outline){
+                    g2d.fill(symbol);
+                }
+                break;
+            case 2:
+                int transformY = dimension.height/7;
+                g2d.translate(0,-transformY);
+                g2d.draw(symbol);
+                if(!outline){
+                    g2d.fill(symbol);
+                }
+                g2d.translate(0,transformY);
+                g2d.translate(0,transformY);
+                g2d.draw(symbol);
+                if(!outline){
+                    g2d.fill(symbol);
+                }
+                break;
+            case 3:
+                g2d.draw(symbol);
+                if(!outline){
+                    g2d.fill(symbol);
+                }
+                int transformY3 = dimension.height/3;
+                g2d.translate(0,-transformY3);
+                g2d.draw(symbol);
+                if(!outline){
+                    g2d.fill(symbol);
+                }
+                g2d.translate(0,transformY3);
+                g2d.translate(0,transformY3);
+                g2d.draw(symbol);
+                if(!outline){
+                    g2d.fill(symbol);
+                }
         }
-        g2d.setStroke(stroke);
 
-
-       // g2d.scale(.9,.9);
-       g2d.draw(ellipse);
     }
 }
